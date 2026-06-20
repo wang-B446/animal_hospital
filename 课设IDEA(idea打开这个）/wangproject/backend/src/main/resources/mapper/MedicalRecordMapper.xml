@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.animal.mapper.MedicalRecordMapper">
+
+    <resultMap id="recordResultMap" type="com.animal.entity.MedicalRecord">
+        <id property="id" column="id"/>
+        <result property="animalId" column="animal_id"/>
+        <result property="doctorId" column="doctor_id"/>
+        <result property="visitDate" column="visit_date"/>
+        <result property="symptom" column="symptom"/>
+        <result property="diagnosis" column="diagnosis"/>
+        <result property="treatment" column="treatment"/>
+        <result property="cost" column="cost"/>
+        <result property="paymentStatus" column="payment_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="animalName" column="animal_name"/>
+        <result property="doctorName" column="doctor_name"/>
+        <result property="ownerName" column="owner_name"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="recordResultMap">
+        SELECT m.*, a.name AS animal_name, d.name AS doctor_name, o.name AS owner_name
+        FROM medical_record m
+        LEFT JOIN animal a ON m.animal_id = a.id
+        LEFT JOIN owner o ON a.owner_id = o.id
+        LEFT JOIN doctor d ON m.doctor_id = d.id
+        ORDER BY m.id ASC
+    </select>
+
+    <select id="findById" resultMap="recordResultMap">
+        SELECT m.*, a.name AS animal_name, d.name AS doctor_name, o.name AS owner_name
+        FROM medical_record m
+        LEFT JOIN animal a ON m.animal_id = a.id
+        LEFT JOIN owner o ON a.owner_id = o.id
+        LEFT JOIN doctor d ON m.doctor_id = d.id
+        WHERE m.id = #{id}
+    </select>
+
+    <select id="search" resultMap="recordResultMap">
+        SELECT m.*, a.name AS animal_name, d.name AS doctor_name, o.name AS owner_name
+        FROM medical_record m
+        LEFT JOIN animal a ON m.animal_id = a.id
+        LEFT JOIN owner o ON a.owner_id = o.id
+        LEFT JOIN doctor d ON m.doctor_id = d.id
+        WHERE m.symptom LIKE CONCAT('%', #{keyword}, '%')
+           OR a.name LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY m.id ASC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO medical_record (animal_id, doctor_id, visit_date, symptom, diagnosis, treatment, cost, payment_status)
+        VALUES (#{animalId}, #{doctorId}, #{visitDate}, #{symptom}, #{diagnosis}, #{treatment}, #{cost}, #{paymentStatus})
+    </insert>
+
+    <update id="update">
+        UPDATE medical_record
+        SET animal_id = #{animalId}, doctor_id = #{doctorId}, visit_date = #{visitDate},
+            symptom = #{symptom}, diagnosis = #{diagnosis}, treatment = #{treatment},
+            cost = #{cost}, payment_status = #{paymentStatus}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM medical_record WHERE id = #{id}
+    </delete>
+
+    <!-- 分页查询 -->
+    <select id="findByPage" resultMap="recordResultMap">
+        SELECT m.*, a.name AS animal_name, d.name AS doctor_name, o.name AS owner_name
+        FROM medical_record m
+        LEFT JOIN animal a ON m.animal_id = a.id
+        LEFT JOIN owner o ON a.owner_id = o.id
+        LEFT JOIN doctor d ON m.doctor_id = d.id
+        ORDER BY m.id ASC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*) FROM medical_record
+    </select>
+
+    <select id="searchByPage" resultMap="recordResultMap">
+        SELECT m.*, a.name AS animal_name, d.name AS doctor_name, o.name AS owner_name
+        FROM medical_record m
+        LEFT JOIN animal a ON m.animal_id = a.id
+        LEFT JOIN owner o ON a.owner_id = o.id
+        LEFT JOIN doctor d ON m.doctor_id = d.id
+        WHERE m.symptom LIKE CONCAT('%', #{keyword}, '%')
+           OR a.name LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY m.id ASC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countSearch" resultType="long">
+        SELECT COUNT(*) FROM medical_record m
+        LEFT JOIN animal a ON m.animal_id = a.id
+        WHERE m.symptom LIKE CONCAT('%', #{keyword}, '%')
+           OR a.name LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.animal.mapper.OwnerMapper">
+
+    <select id="findAll" resultType="com.animal.entity.Owner">
+        SELECT * FROM owner ORDER BY id ASC
+    </select>
+
+    <select id="findById" resultType="com.animal.entity.Owner">
+        SELECT * FROM owner WHERE id = #{id}
+    </select>
+
+    <select id="findByName" resultType="com.animal.entity.Owner">
+        SELECT * FROM owner WHERE name LIKE CONCAT('%', #{name}, '%') ORDER BY id ASC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO owner (name, phone, address, remark)
+        VALUES (#{name}, #{phone}, #{address}, #{remark})
+    </insert>
+
+    <update id="update">
+        UPDATE owner SET name = #{name}, phone = #{phone}, address = #{address}, remark = #{remark}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM owner WHERE id = #{id}
+    </delete>
+
+    <!-- 分页查询 -->
+    <select id="findByPage" resultType="com.animal.entity.Owner">
+        SELECT * FROM owner ORDER BY id ASC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*) FROM owner
+    </select>
+
+    <select id="searchByPage" resultType="com.animal.entity.Owner">
+        SELECT * FROM owner WHERE name LIKE CONCAT('%', #{name}, '%') ORDER BY id ASC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countByName" resultType="long">
+        SELECT COUNT(*) FROM owner WHERE name LIKE CONCAT('%', #{name}, '%')
+    </select>
+</mapper>

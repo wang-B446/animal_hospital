@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.animal.mapper.AppointmentMapper">
+
+    <resultMap id="appointmentResultMap" type="com.animal.entity.Appointment">
+        <id property="id" column="id"/>
+        <result property="animalId" column="animal_id"/>
+        <result property="doctorId" column="doctor_id"/>
+        <result property="appointmentDate" column="appointment_date"/>
+        <result property="appointmentTime" column="appointment_time"/>
+        <result property="reason" column="reason"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="animalName" column="animal_name"/>
+        <result property="species" column="species"/>
+        <result property="ownerName" column="owner_name"/>
+        <result property="doctorName" column="doctor_name"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="appointmentResultMap">
+        SELECT a.*, an.name AS animal_name, o.name AS owner_name, d.name AS doctor_name
+        FROM appointment a
+        LEFT JOIN animal an ON a.animal_id = an.id
+        LEFT JOIN owner o ON an.owner_id = o.id
+        LEFT JOIN doctor d ON a.doctor_id = d.id
+        ORDER BY a.appointment_date ASC, a.appointment_time ASC
+    </select>
+
+    <select id="findById" resultMap="appointmentResultMap">
+        SELECT a.*, an.name AS animal_name, o.name AS owner_name, d.name AS doctor_name
+        FROM appointment a
+        LEFT JOIN animal an ON a.animal_id = an.id
+        LEFT JOIN owner o ON an.owner_id = o.id
+        LEFT JOIN doctor d ON a.doctor_id = d.id
+        WHERE a.id = #{id}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO appointment (animal_id, doctor_id, appointment_date, appointment_time, reason, status, animal_name, species, owner_name)
+        VALUES (#{animalId}, #{doctorId}, #{appointmentDate}, #{appointmentTime}, #{reason}, #{status}, #{animalName}, #{species}, #{ownerName})
+    </insert>
+
+    <update id="update">
+        UPDATE appointment
+        SET animal_id = #{animalId}, doctor_id = #{doctorId}, appointment_date = #{appointmentDate},
+            appointment_time = #{appointmentTime}, reason = #{reason}, status = #{status},
+            animal_name = #{animalName}, species = #{species}, owner_name = #{ownerName}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM appointment WHERE id = #{id}
+    </delete>
+
+    <!-- 分页查询 -->
+    <select id="findByPage" resultMap="appointmentResultMap">
+        SELECT a.*, an.name AS animal_name, o.name AS owner_name, d.name AS doctor_name
+        FROM appointment a
+        LEFT JOIN animal an ON a.animal_id = an.id
+        LEFT JOIN owner o ON an.owner_id = o.id
+        LEFT JOIN doctor d ON a.doctor_id = d.id
+        ORDER BY a.appointment_date ASC, a.appointment_time ASC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*) FROM appointment
+    </select>
+</mapper>

@@ -1,0 +1,2 @@
+cd C:\Users\19213\Desktop\课设\wangproject\frontend
+npm run dev

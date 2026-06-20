@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.animal.mapper.AnimalMapper">
+
+    <resultMap id="animalResultMap" type="com.animal.entity.Animal">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="species" column="species"/>
+        <result property="breed" column="breed"/>
+        <result property="gender" column="gender"/>
+        <result property="age" column="age"/>
+        <result property="weight" column="weight"/>
+        <result property="ownerId" column="owner_id"/>
+        <result property="symptom" column="symptom"/>
+        <result property="photo" column="photo"/>
+        <result property="vaccineDate" column="vaccine_date"/>
+        <result property="nextVaccineDate" column="next_vaccine_date"/>
+        <result property="createTime" column="create_time"/>
+        <result property="ownerName" column="owner_name"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="animalResultMap">
+        SELECT a.*, o.name AS owner_name
+        FROM animal a
+        LEFT JOIN owner o ON a.owner_id = o.id
+        ORDER BY a.id ASC
+    </select>
+
+    <select id="findById" resultMap="animalResultMap">
+        SELECT a.*, o.name AS owner_name
+        FROM animal a
+        LEFT JOIN owner o ON a.owner_id = o.id
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findByName" resultMap="animalResultMap">
+        SELECT a.*, o.name AS owner_name
+        FROM animal a
+        LEFT JOIN owner o ON a.owner_id = o.id
+        WHERE a.name LIKE CONCAT('%', #{name}, '%')
+        ORDER BY a.id ASC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO animal (name, species, breed, gender, age, weight, owner_id, symptom, photo, vaccine_date, next_vaccine_date)
+        VALUES (#{name}, #{species}, #{breed}, #{gender}, #{age}, #{weight}, #{ownerId}, #{symptom}, #{photo}, #{vaccineDate}, #{nextVaccineDate})
+    </insert>
+
+    <update id="update">
+        UPDATE animal
+        SET name = #{name}, species = #{species}, breed = #{breed},
+            gender = #{gender}, age = #{age}, weight = #{weight}, owner_id = #{ownerId},
+            symptom = #{symptom}, photo = #{photo}, vaccine_date = #{vaccineDate},
+            next_vaccine_date = #{nextVaccineDate}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM animal WHERE id = #{id}
+    </delete>
+
+    <!-- 分页查询 -->
+    <select id="findByPage" resultMap="animalResultMap">
+        SELECT a.*, o.name AS owner_name
+        FROM animal a
+        LEFT JOIN owner o ON a.owner_id = o.id
+        ORDER BY a.id ASC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*) FROM animal
+    </select>
+
+    <select id="searchByPage" resultMap="animalResultMap">
+        SELECT a.*, o.name AS owner_name
+        FROM animal a
+        LEFT JOIN owner o ON a.owner_id = o.id
+        WHERE a.name LIKE CONCAT('%', #{name}, '%')
+        ORDER BY a.id ASC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countByName" resultType="long">
+        SELECT COUNT(*) FROM animal WHERE name LIKE CONCAT('%', #{name}, '%')
+    </select>
+</mapper>
